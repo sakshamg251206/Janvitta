@@ -1,0 +1,269 @@
+/* ============================================
+   LabhSetu — Mobile Responsive
+   Production Grade v2.0
+   ============================================ */
+
+/* ---- Base mobile (≤480px) ---- */
+@media (max-width: 480px) {
+
+  body {
+    font-size: 14px;
+  }
+
+  .app-main {
+    padding: 16px;
+  }
+
+  /* Header */
+  .app-header {
+    padding: 12px 16px;
+  }
+
+  .logo-main {
+    font-size: 0.95rem;
+  }
+
+  /* Hero */
+  .hero-block {
+    margin-bottom: 24px;
+  }
+
+  .hero-title {
+    font-size: 1.6rem;
+  }
+
+  .hero-badge {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+  }
+
+  /* Form rows collapse to single col on small screens */
+  .form-row-2 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Chips wrap better */
+  .chip {
+    font-size: 0.78rem;
+    padding: 7px 12px;
+  }
+
+  /* Toggle group */
+  .toggle-label {
+    font-size: 0.85rem;
+  }
+
+  .toggle-desc {
+    font-size: 0.7rem;
+  }
+
+  /* CTA */
+  .btn-cta {
+    padding: 15px;
+    font-size: 0.95rem;
+  }
+
+  /* Results summary */
+  .stat-number {
+    font-size: 1.6rem;
+  }
+
+  .stat-amount {
+    font-size: 1.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+  }
+
+  .results-summary {
+    padding: 16px 12px;
+  }
+
+  /* Scheme cards */
+  .card-inner {
+    padding: 14px 14px 10px;
+  }
+
+  .scheme-name {
+    font-size: 0.92rem;
+  }
+
+  .benefit-amount {
+    font-size: 1.15rem;
+  }
+
+  /* Share strip */
+  .share-strip {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  /* Progress */
+  .progress-label {
+    font-size: 0.7rem;
+  }
+}
+
+/* ---- Very small (≤360px) ---- */
+@media (max-width: 360px) {
+  .hero-title {
+    font-size: 1.4rem;
+  }
+
+  .chip {
+    font-size: 0.73rem;
+    padding: 6px 10px;
+  }
+
+  .scheme-name {
+    font-size: 0.88rem;
+  }
+
+  .benefit-amount {
+    font-size: 1.05rem;
+  }
+
+  .stat-number {
+    font-size: 1.4rem;
+  }
+
+  .stat-amount {
+    font-size: 1.15rem;
+  }
+
+  .results-summary {
+    gap: 0;
+  }
+
+  .summary-divider {
+    display: none;
+  }
+}
+
+/* ---- Tablet (481px–768px) ---- */
+@media (min-width: 481px) and (max-width: 768px) {
+  .hero-title {
+    font-size: 1.9rem;
+  }
+
+  .app-main {
+    padding: 24px;
+  }
+}
+
+/* ---- Desktop ---- */
+@media (min-width: 769px) {
+  .app-main {
+    padding: 32px 24px;
+  }
+
+  .hero-title {
+    font-size: 2.2rem;
+  }
+
+  .scheme-card:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* ---- Touch improvements ---- */
+@media (hover: none) {
+
+  /* Remove hover effects on touch devices */
+  .scheme-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-cta:hover {
+    transform: none;
+    box-shadow: 0 4px 20px var(--green-glow);
+  }
+
+  /* Larger touch targets */
+  .chip {
+    min-height: 40px;
+  }
+
+  .toggle-item {
+    min-height: 56px;
+  }
+
+  .btn-apply {
+    min-height: 48px;
+  }
+}
+
+/* ---- Safe area insets (notch phones) ---- */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .app-header {
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+
+  .results-footer {
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+  }
+
+  .toast {
+    bottom: max(24px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .orb-1,
+  .orb-2 {
+    animation: none;
+  }
+
+  .scan-icon {
+    animation: none;
+  }
+
+  .pulse-ring {
+    display: none;
+  }
+
+  .btn-shimmer {
+    display: none;
+  }
+}
+
+/* ---- Dark mode (already dark, but ensure consistency) ---- */
+@media (prefers-color-scheme: light) {
+
+  /* Force dark even if system is light — intentional dark-only app */
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* ---- Print ---- */
+@media print {
+
+  .ambient-bg,
+  .app-header,
+  .progress-rail,
+  .share-strip,
+  .btn-restart,
+  .btn-apply {
+    display: none !important;
+  }
+
+  .scheme-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}

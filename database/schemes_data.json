@@ -1,0 +1,379 @@
+{
+  "schemes": [
+    {
+      "id": 1,
+      "name_en": "PM Kisan Samman Nidhi",
+      "name_hi": "पीएम किसान सम्मान निधि",
+      "ministry": "Ministry of Agriculture & Farmers' Welfare",
+      "benefit_amount": 6000,
+      "benefit_type": "cash",
+      "criteria": {
+        "occupation": ["farmer"],
+        "has_land": true
+      },
+      "apply_link": "https://pmkisan.gov.in",
+      "documents": ["Aadhaar Card", "Land Records", "Bank Account"],
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "name_en": "PM Awas Yojana (Urban)",
+      "name_hi": "पीएम आवास योजना (शहरी)",
+      "ministry": "Ministry of Housing and Urban Affairs",
+      "benefit_amount": 250000,
+      "benefit_type": "subsidy",
+      "criteria": {
+        "max_income": 300000,
+        "has_pucca_house": false
+      },
+      "apply_link": "https://pmaymis.gov.in",
+      "documents": ["Aadhaar Card", "Income Certificate", "Bank Account"],
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "name_en": "Ayushman Bharat PM-JAY",
+      "name_hi": "आयुष्मान भारत पीएम-जय",
+      "ministry": "Ministry of Health and Family Welfare",
+      "benefit_amount": 500000,
+      "benefit_type": "insurance",
+      "criteria": {
+        "is_bpl": true
+      },
+      "apply_link": "https://pmjay.gov.in",
+      "documents": ["Aadhaar Card", "Ration Card"],
+      "isActive": true
+    },
+    {
+      "id": 4,
+      "name_en": "PM Mudra Loan - Shishu",
+      "name_hi": "पीएम मुद्रा लोन - शिशु",
+      "ministry": "Ministry of Finance",
+      "benefit_amount": 50000,
+      "benefit_type": "loan",
+      "criteria": {
+        "occupation": ["business", "small business"],
+        "max_income": 500000
+      },
+      "apply_link": "https://mudra.org.in",
+      "documents": ["Aadhaar Card", "Business Proof"],
+      "isActive": true
+    },
+    {
+      "id": 5,
+      "name_en": "Sukanya Samriddhi Yojana",
+      "name_hi": "सुकन्या समृद्धि योजना",
+      "ministry": "Ministry of Finance",
+      "benefit_amount": 0,
+      "benefit_type": "savings",
+      "criteria": {
+        "gender": "female",
+        "max_age": 10
+      },
+      "apply_link": "https://nsiindia.gov.in",
+      "documents": ["Birth Certificate", "Aadhaar Card of Parent/Guardian"],
+      "isActive": true
+    },
+    {
+      "id": 6,
+      "name_en": "PM SVANidhi",
+      "name_hi": "पीएम स्वनिधि",
+      "ministry": "Ministry of Housing and Urban Affairs",
+      "benefit_amount": 10000,
+      "benefit_type": "loan",
+      "criteria": {
+        "occupation": ["street vendor"]
+      },
+      "apply_link": "https://pmsvanidhi.mohua.gov.in",
+      "documents": ["Aadhaar Card", "Vending Certificate / ID Card"],
+      "isActive": true
+    },
+    {
+      "id": 7,
+      "name_en": "Ujjwala Yojana 2.0",
+      "name_hi": "उज्ज्वला योजना 2.0",
+      "ministry": "Ministry of Petroleum and Natural Gas",
+      "benefit_amount": 1600,
+      "benefit_type": "subsidy",
+      "criteria": {
+        "gender": "female",
+        "is_bpl": true,
+        "has_lpg_connection": false
+      },
+      "apply_link": "https://pmuy.gov.in",
+      "documents": ["Aadhaar Card", "BPL Ration Card"],
+      "isActive": true
+    },
+    {
+      "id": 8,
+      "name_en": "National Scholarship Portal",
+      "name_hi": "राष्ट्रीय छात्रवृत्ति पोर्टल",
+      "ministry": "Ministry of Electronics and Information Technology",
+      "benefit_amount": 75000,
+      "benefit_type": "cash",
+      "criteria": {
+        "occupation": ["student"],
+        "casteCategory": ["SC", "ST", "OBC"],
+        "max_income": 250000
+      },
+      "apply_link": "https://scholarships.gov.in",
+      "documents": ["Aadhaar Card", "Income Certificate", "Caste Certificate", "Bank Account"],
+      "isActive": true
+    },
+    {
+      "id": 9,
+      "name_en": "PM Jeevan Jyoti Bima",
+      "name_hi": "पीएम जीवन ज्योति बीमा",
+      "ministry": "Ministry of Finance",
+      "benefit_amount": 200000,
+      "benefit_type": "insurance",
+      "criteria": {
+        "min_age": 18,
+        "max_age": 50,
+        "has_bank_account": true
+      },
+      "apply_link": "https://jansuraksha.gov.in",
+      "documents": ["Aadhaar Card", "Bank Account Passbook"],
+      "isActive": true
+    },
+    {
+      "id": 10,
+      "name_en": "PM Suraksha Bima",
+      "name_hi": "पीएम सुरक्षा बीमा",
+      "ministry": "Ministry of Finance",
+      "benefit_amount": 200000,
+      "benefit_type": "insurance",
+      "criteria": {
+        "min_age": 18,
+        "max_age": 70,
+        "has_bank_account": true
+      },
+      "apply_link": "https://jansuraksha.gov.in",
+      "documents": ["Aadhaar Card", "Bank Account Passbook"],
+      "isActive": true
+    },
+    {
+      "id": 11,
+      "name_en": "Atal Pension Yojana",
+      "name_hi": "अटल पेंशन योजना",
+      "ministry": "Ministry of Finance",
+      "benefit_amount": 5000,
+      "benefit_type": "pension",
+      "criteria": {
+        "min_age": 18,
+        "max_age": 40,
+        "sector": "unorganized"
+      },
+      "apply_link": "https://npscra.nsdl.co.in",
+      "documents": ["Aadhaar Card", "Bank Account Passbook"],
+      "isActive": true
+    },
+    {
+      "id": 12,
+      "name_en": "PM Garib Kalyan Anna Yojana",
+      "name_hi": "पीएम गरीब कल्याण अन्न योजना",
+      "ministry": "Ministry of Consumer Affairs, Food and Public Distribution",
+      "benefit_amount": 0,
+      "benefit_type": "subsidy",
+      "criteria": {
+        "has_ration_card": true
+      },
+      "apply_link": "https://dfpd.gov.in",
+      "documents": ["Ration Card", "Aadhaar Card"],
+      "isActive": true
+    },
+    {
+      "id": 13,
+      "name_en": "Beti Bachao Beti Padhao",
+      "name_hi": "बेटी बचाओ बेटी पढ़ाओ",
+      "ministry": "Ministry of Women and Child Development",
+      "benefit_amount": 0,
+      "benefit_type": "support",
+      "criteria": {
+        "has_girl_child": true,
+        "location": "rural"
+      },
+      "apply_link": "https://wcd.nic.in",
+      "documents": ["Girl Child Birth Certificate", "Aadhaar Card"],
+      "isActive": true
+    },
+    {
+      "id": 14,
+      "name_en": "Stand Up India",
+      "name_hi": "स्टैंड अप इंडिया",
+      "ministry": "Ministry of Finance",
+      "benefit_amount": 10000000,
+      "benefit_type": "loan",
+      "criteria": {
+        "occupation": ["entrepreneur", "business"],
+        "casteCategory": ["SC", "ST"]
+      },
+      "apply_link": "https://standupmitra.in",
+      "documents": ["Aadhaar Card", "Project Report", "Caste Certificate"],
+      "isActive": true
+    },
+    {
+      "id": 15,
+      "name_en": "PM Kaushal Vikas Yojana",
+      "name_hi": "पीएम कौशल विकास योजना",
+      "ministry": "Ministry of Skill Development and Entrepreneurship",
+      "benefit_amount": 8000,
+      "benefit_type": "cash",
+      "criteria": {
+        "occupation": ["unemployed"],
+        "min_age": 15,
+        "max_age": 45
+      },
+      "apply_link": "https://pmkvyofficial.org",
+      "documents": ["Aadhaar Card", "Bank Account", "Passport Size Photo"],
+      "isActive": true
+    },
+    {
+      "id": 16,
+      "name_en": "Startup India Seed Fund",
+      "name_hi": "स्टार्टअप इंडिया सीड फंड",
+      "ministry": "Ministry of Commerce and Industry",
+      "benefit_amount": 2000000,
+      "benefit_type": "grant",
+      "criteria": {
+        "has_registered_startup": true,
+        "startup_stage": "early"
+      },
+      "apply_link": "https://seedfund.startupindia.gov.in",
+      "documents": ["DPIIT Recognition Certificate", "Incorporation Certificate"],
+      "isActive": true
+    },
+    {
+      "id": 17,
+      "name_en": "MNREGA",
+      "name_hi": "मनरेगा",
+      "ministry": "Ministry of Rural Development",
+      "benefit_amount": 0,
+      "benefit_type": "employment",
+      "criteria": {
+        "location": "rural",
+        "min_age": 18
+      },
+      "apply_link": "https://nrega.nic.in",
+      "documents": ["Aadhaar Card", "Bank Account", "Voter ID / Photograph"],
+      "isActive": true
+    },
+    {
+      "id": 18,
+      "name_en": "Pradhan Mantri Vaya Vandana",
+      "name_hi": "प्रधानमंत्री वय वंदना",
+      "ministry": "Ministry of Finance",
+      "benefit_amount": 0,
+      "benefit_type": "pension",
+      "criteria": {
+        "min_age": 60
+      },
+      "apply_link": "https://licindia.in",
+      "documents": ["Aadhaar Card", "Age Proof", "Bank Account"],
+      "isActive": true
+    },
+    {
+      "id": 19,
+      "name_en": "Janani Suraksha Yojana",
+      "name_hi": "जननी सुरक्षा योजना",
+      "ministry": "Ministry of Health and Family Welfare",
+      "benefit_amount": 1400,
+      "benefit_type": "cash",
+      "criteria": {
+        "is_pregnant": true,
+        "is_bpl": true,
+        "location": "rural"
+      },
+      "apply_link": "https://nhm.gov.in",
+      "documents": ["BPL Card", "Aadhaar Card", "Jacha Bacha Card (MCP Card)"],
+      "isActive": true
+    },
+    {
+      "id": 20,
+      "name_en": "PM Vishwakarma Yojana",
+      "name_hi": "पीएम विश्वकर्मा योजना",
+      "ministry": "Ministry of Micro, Small and Medium Enterprises",
+      "benefit_amount": 300000,
+      "benefit_type": "loan",
+      "criteria": {
+        "occupation": ["craftsman", "artisan", "traditional worker"]
+      },
+      "apply_link": "https://pmvishwakarma.gov.in",
+      "documents": ["Aadhaar Card", "Bank Account", "Mobile Number linked to Aadhaar"],
+      "isActive": true
+    },
+    {
+      "id": 21,
+      "name_en": "Kisan Credit Card",
+      "name_hi": "किसान क्रेडिट कार्ड",
+      "ministry": "Ministry of Agriculture & Farmers' Welfare",
+      "benefit_amount": 300000,
+      "benefit_type": "loan",
+      "criteria": {
+        "occupation": ["farmer", "fisherman"]
+      },
+      "apply_link": "https://agriculture.gov.in",
+      "documents": ["Aadhaar Card", "Land Records", "Cultivation Proof"],
+      "isActive": true
+    },
+    {
+      "id": 22,
+      "name_en": "PM CARES for Children",
+      "name_hi": "पीएम केयर्स फॉर चिल्ड्रन",
+      "ministry": "Ministry of Women and Child Development",
+      "benefit_amount": 1000000,
+      "benefit_type": "cash",
+      "criteria": {
+        "is_covid_orphan": true,
+        "max_age": 23
+      },
+      "apply_link": "https://pmcaresforchildren.in",
+      "documents": ["Death Certificates of Parents", "Child's Aadhaar Card", "Age Proof"],
+      "isActive": true
+    },
+    {
+      "id": 23,
+      "name_en": "National Family Benefit Scheme",
+      "name_hi": "राष्ट्रीय परिवार लाभ योजना",
+      "ministry": "Ministry of Rural Development",
+      "benefit_amount": 20000,
+      "benefit_type": "cash",
+      "criteria": {
+        "is_bpl": true,
+        "breadwinner_died": true
+      },
+      "apply_link": "https://nsap.nic.in",
+      "documents": ["BPL Card", "Death Certificate of Breadwinner", "Aadhaar Card"],
+      "isActive": true
+    },
+    {
+      "id": 24,
+      "name_en": "Disability Certificate Benefits",
+      "name_hi": "विकलांगता प्रमाणपत्र लाभ",
+      "ministry": "Department of Empowerment of Persons with Disabilities",
+      "benefit_amount": 1500,
+      "benefit_type": "pension",
+      "criteria": {
+        "isDifferentlyAbled": true,
+        "min_disability_percentage": 40
+      },
+      "apply_link": "https://disabilityaffairs.gov.in",
+      "documents": ["Disability Certificate (UDID)", "Aadhaar Card", "Bank Account"],
+      "isActive": true
+    },
+    {
+      "id": 25,
+      "name_en": "eShram Card Benefits",
+      "name_hi": "ई-श्रम कार्ड लाभ",
+      "ministry": "Ministry of Labour and Employment",
+      "benefit_amount": 200000,
+      "benefit_type": "insurance",
+      "criteria": {
+        "sector": "unorganized"
+      },
+      "apply_link": "https://eshram.gov.in",
+      "documents": ["Aadhaar connected to Mobile", "Bank Account Details"],
+      "isActive": true
+    }
+  ]
+}

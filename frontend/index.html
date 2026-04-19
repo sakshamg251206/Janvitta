@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description"
+        content="LabhSetu - Find all government schemes you qualify for in minutes. Free AI-powered eligibility checker for India.">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>LabhSetu — सरकारी योजना खोजें</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/cards.css">
+    <link rel="stylesheet" href="styles/mobile.css">
+</head>
+
+<body>
+    <!-- Ambient background -->
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <div id="app" class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-container">
+                <div class="logo-mark">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2L3 7V18H8V13H12V18H17V7L10 2Z" fill="#0a0a0a" />
+                        <circle cx="10" cy="10" r="2.5" fill="#0a0a0a" />
+                    </svg>
+                </div>
+                <div class="logo-wordmark">
+                    <span class="logo-main">LabhSetu</span>
+                    <span class="logo-sub">लाभसेतु</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button id="lang-toggle" class="lang-pill" aria-label="Toggle language">
+                    <span class="lang-en">EN</span>
+                    <span class="lang-divider">/</span>
+                    <span class="lang-hi">हिं</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <!-- Progress bar -->
+            <div class="progress-rail" id="progress-rail">
+                <div class="progress-track">
+                    <div id="progress-bar" class="progress-thumb" style="width:33%"></div>
+                </div>
+                <span class="progress-label" id="step-indicator">Step 1 of 3</span>
+            </div>
+
+            <div id="views">
+
+                <!-- VIEW 1: FORM -->
+                <section id="view-form" class="view active">
+                    <div class="hero-block">
+                        <div class="hero-badge" data-i18n="badge_free">✦ Free · No Login Required</div>
+                        <h2 class="hero-title" data-i18n="hero_title">Find Every Scheme<br>You Deserve</h2>
+                        <p class="hero-sub" data-i18n="hero_subtitle">Answer 8 questions. Discover benefits worth lakhs.
+                        </p>
+                    </div>
+
+                    <form id="profile-form" class="profile-form" novalidate>
+
+                        <!-- Row: Age + Gender -->
+                        <div class="form-row-2">
+                            <div class="form-field">
+                                <label for="age" data-i18n="label_age">Age</label>
+                                <div class="input-wrap">
+                                    <input type="number" id="age" name="age" placeholder="35" min="1" max="120" required
+                                        inputmode="numeric">
+                                    <span class="input-suffix" data-i18n="suffix_years">yrs</span>
+                                </div>
+                                <span class="field-error" id="err-age"></span>
+                            </div>
+                            <div class="form-field">
+                                <label for="gender" data-i18n="label_gender">Gender</label>
+                                <div class="select-wrap">
+                                    <select id="gender" name="gender" required>
+                                        <option value="" disabled selected>Select</option>
+                                        <option value="male" data-i18n="gender_male">Male</option>
+                                        <option value="female" data-i18n="gender_female">Female</option>
+                                        <option value="other" data-i18n="gender_other">Other</option>
+                                    </select>
+                                    <span class="select-arrow">▾</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Income -->
+                        <div class="form-field">
+                            <label for="annualIncome" data-i18n="label_income">Annual Family Income</label>
+                            <div class="input-wrap">
+                                <span class="input-prefix">₹</span>
+                                <input type="number" id="annualIncome" name="annualIncome" placeholder="2,50,000"
+                                    min="0" required inputmode="numeric">
+                            </div>
+                            <div class="income-hint" id="income-hint"></div>
+                            <span class="field-error" id="err-income"></span>
+                        </div>
+
+                        <!-- Occupation -->
+                        <div class="form-field">
+                            <label data-i18n="label_occupation">Occupation</label>
+                            <div class="chip-group" id="occupation-chips" role="group">
+                                <button type="button" class="chip" data-value="farmer" data-i18n="occ_farmer">🌾
+                                    Farmer</button>
+                                <button type="button" class="chip" data-value="student" data-i18n="occ_student">📚
+                                    Student</button>
+                                <button type="button" class="chip" data-value="business" data-i18n="occ_business">🏪
+                                    Business</button>
+                                <button type="button" class="chip" data-value="street vendor" data-i18n="occ_vendor">🛒
+                                    Vendor</button>
+                                <button type="button" class="chip" data-value="craftsman" data-i18n="occ_craftsman">🔨
+                                    Craftsman</button>
+                                <button type="button" class="chip" data-value="unemployed" data-i18n="occ_unemployed">⏳
+                                    Unemployed</button>
+                                <button type="button" class="chip" data-value="other" data-i18n="occ_other">💼
+                                    Service/Other</button>
+                            </div>
+                            <input type="hidden" id="occupation" name="occupation" required>
+                            <span class="field-error" id="err-occupation"></span>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="form-field">
+                            <label data-i18n="label_caste">Category</label>
+                            <div class="chip-group" id="caste-chips" role="group">
+                                <button type="button" class="chip" data-value="General">General</button>
+                                <button type="button" class="chip" data-value="OBC">OBC</button>
+                                <button type="button" class="chip" data-value="SC">SC</button>
+                                <button type="button" class="chip" data-value="ST">ST</button>
+                            </div>
+                            <input type="hidden" id="casteCategory" name="casteCategory" required>
+                            <span class="field-error" id="err-caste"></span>
+                        </div>
+
+                        <!-- State -->
+                        <div class="form-field">
+                            <label for="state" data-i18n="label_state">State</label>
+                            <div class="select-wrap">
+                                <select id="state" name="state" required>
+                                    <option value="" disabled selected>Select your state</option>
+                                    <option value="AN">Andaman & Nicobar</option>
+                                    <option value="AP">Andhra Pradesh</option>
+                                    <option value="AR">Arunachal Pradesh</option>
+                                    <option value="AS">Assam</option>
+                                    <option value="BR">Bihar</option>
+                                    <option value="CH">Chandigarh</option>
+                                    <option value="CG">Chhattisgarh</option>
+                                    <option value="DN">Dadra & Nagar Haveli</option>
+                                    <option value="DD">Daman & Diu</option>
+                                    <option value="DL">Delhi</option>
+                                    <option value="GA">Goa</option>
+                                    <option value="GJ">Gujarat</option>
+                                    <option value="HR">Haryana</option>
+                                    <option value="HP">Himachal Pradesh</option>
+                                    <option value="JK">Jammu & Kashmir</option>
+                                    <option value="JH">Jharkhand</option>
+                                    <option value="KA">Karnataka</option>
+                                    <option value="KL">Kerala</option>
+                                    <option value="LA">Ladakh</option>
+                                    <option value="LD">Lakshadweep</option>
+                                    <option value="MP">Madhya Pradesh</option>
+                                    <option value="MH">Maharashtra</option>
+                                    <option value="MN">Manipur</option>
+                                    <option value="ML">Meghalaya</option>
+                                    <option value="MZ">Mizoram</option>
+                                    <option value="NL">Nagaland</option>
+                                    <option value="OR">Odisha</option>
+                                    <option value="PY">Puducherry</option>
+                                    <option value="PB">Punjab</option>
+                                    <option value="RJ">Rajasthan</option>
+                                    <option value="SK">Sikkim</option>
+                                    <option value="TN">Tamil Nadu</option>
+                                    <option value="TS">Telangana</option>
+                                    <option value="TR">Tripura</option>
+                                    <option value="UP">Uttar Pradesh</option>
+                                    <option value="UK">Uttarakhand</option>
+                                    <option value="WB">West Bengal</option>
+                                </select>
+                                <span class="select-arrow">▾</span>
+                            </div>
+                        </div>
+
+                        <!-- Toggles -->
+                        <div class="toggle-group">
+                            <div class="toggle-item">
+                                <div class="toggle-text">
+                                    <span class="toggle-label" data-i18n="label_bpl">BPL Card</span>
+                                    <span class="toggle-desc" data-i18n="desc_bpl">Below Poverty Line ration card</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="hasBPLCard" name="hasBPLCard">
+                                    <span class="toggle-track"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-item">
+                                <div class="toggle-text">
+                                    <span class="toggle-label" data-i18n="label_land">Agriculture Land</span>
+                                    <span class="toggle-desc" data-i18n="desc_land">Own any agricultural land</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="hasLandHolding" name="hasLandHolding">
+                                    <span class="toggle-track"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-item">
+                                <div class="toggle-text">
+                                    <span class="toggle-label" data-i18n="label_disabled">Differently Abled</span>
+                                    <span class="toggle-desc" data-i18n="desc_disabled">40% or more disability</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="isDifferentlyAbled" name="isDifferentlyAbled">
+                                    <span class="toggle-track"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-item">
+                                <div class="toggle-text">
+                                    <span class="toggle-label" data-i18n="label_bank">Bank Account</span>
+                                    <span class="toggle-desc" data-i18n="desc_bank">Active bank account in your
+                                        name</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="hasBankAccount" name="hasBankAccount" checked>
+                                    <span class="toggle-track"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-cta" id="btn-analyze">
+                            <span class="btn-cta-text" data-i18n="btn_analyze">Find My Schemes</span>
+                            <span class="btn-cta-arrow">→</span>
+                            <div class="btn-shimmer"></div>
+                        </button>
+
+                        <p class="privacy-note" data-i18n="privacy_note">🔒 Your data never leaves your device</p>
+                    </form>
+                </section>
+
+                <!-- VIEW 2: LOADING -->
+                <section id="view-loading" class="view hidden">
+                    <div class="loading-scene">
+                        <div class="pulse-ring"></div>
+                        <div class="pulse-ring delay-1"></div>
+                        <div class="pulse-ring delay-2"></div>
+                        <div class="scan-icon">
+                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                                <circle cx="20" cy="20" r="18" stroke="#00c853" stroke-width="2"
+                                    stroke-dasharray="4 4" />
+                                <path d="M12 20H28M20 12V28" stroke="#00c853" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <div class="loading-text-block">
+                            <h3 class="loading-title" data-i18n="analyzing_title">Analyzing 100+ Schemes</h3>
+                            <p class="loading-step" id="loading-step">Checking eligibility criteria...</p>
+                        </div>
+                        <div class="loading-progress">
+                            <div class="loading-bar" id="loading-bar"></div>
+                        </div>
+                        <div class="loading-schemes" id="loading-schemes"></div>
+                    </div>
+                </section>
+
+                <!-- VIEW 3: RESULTS -->
+                <section id="view-results" class="view hidden">
+                    <!-- Summary strip -->
+                    <div class="results-summary">
+                        <div class="summary-stat">
+                            <span class="stat-number text-green" id="eligible-count">0</span>
+                            <span class="stat-label" data-i18n="stat_eligible">Eligible</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-stat center">
+                            <span class="stat-amount text-green" id="total-amount">₹0</span>
+                            <span class="stat-label" data-i18n="stat_total">Total Benefits</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-stat">
+                            <span class="stat-number text-yellow" id="almost-count">0</span>
+                            <span class="stat-label" data-i18n="stat_almost">Almost</span>
+                        </div>
+                    </div>
+
+                    <!-- Share strip -->
+                    <div class="share-strip">
+                        <p class="share-text" data-i18n="share_text">Share with family</p>
+                        <div class="share-btns">
+                            <button class="share-btn whatsapp" onclick="shareWhatsApp()" aria-label="Share on WhatsApp">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                </svg>
+                                WhatsApp
+                            </button>
+                            <button class="share-btn copy" onclick="copyResults()" aria-label="Copy results"
+                                id="copy-btn">
+                                📋 Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="result-tabs" role="tablist">
+                        <button class="rtab active" data-target="eligible-list" role="tab" aria-selected="true">
+                            <span data-i18n="tab_eligible">Eligible</span>
+                            <span class="rtab-count" id="tab-eligible-count">0</span>
+                        </button>
+                        <button class="rtab" data-target="almost-list" role="tab" aria-selected="false">
+                            <span data-i18n="tab_almost">Almost</span>
+                            <span class="rtab-count yellow" id="tab-almost-count">0</span>
+                        </button>
+                    </div>
+
+                    <div id="eligible-list" class="scheme-list" role="tabpanel"></div>
+                    <div id="almost-list" class="scheme-list hidden-tab" role="tabpanel"></div>
+
+                    <div class="results-footer">
+                        <p class="disclaimer" data-i18n="disclaimer">Eligibility is indicative. Verify at official
+                            government portals before applying.</p>
+                        <button class="btn-restart" id="btn-restart">
+                            <span data-i18n="btn_restart">← Check Again</span>
+                        </button>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Toast notification -->
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script src="scripts/language.js"></script>
+    <script src="scripts/schemes.js"></script>
+    <script src="scripts/matcher.js"></script>
+    <script src="scripts/app.js"></script>
+
+    <script>
+        function shareWhatsApp() {
+            const amount = document.getElementById('total-amount').textContent;
+            const count = document.getElementById('eligible-count').textContent;
+            const text = `मुझे LabhSetu पर ${count} सरकारी योजनाएं मिलीं जिनका कुल लाभ ${amount} है! आप भी चेक करें 👉 https://labhsetu.in`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+        function copyResults() {
+            const amount = document.getElementById('total-amount').textContent;
+            const count = document.getElementById('eligible-count').textContent;
+            const text = `LabhSetu पर ${count} schemes मिलीं, कुल ${amount} का लाभ। Check: https://labhsetu.in`;
+            navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
+        }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+    </script>
+</body>
+
+</html>
