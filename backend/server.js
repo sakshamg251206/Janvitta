@@ -15,6 +15,10 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Serve static frontend
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../frontend')));
+
 // Main Routes
 app.use('/api/schemes', schemeRoutes);
 app.use('/api/user', userRoutes);
