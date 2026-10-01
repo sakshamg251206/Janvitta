@@ -1,427 +1,135 @@
-/* ============================================
-   LabhSetu — Main App Controller
-   ============================================ */
+// @ts-check
+/**
+ * LabhSetu — application entry point.
+ *
+ * Matching runs entirely in the browser using the same engine and catalog as
+ * the API, so answers never leave the device.
+ */
 
-// ── State ────────────────────────────────────
-let currentProfile = null;
-let matchResults = null;
+import { matchSchemes } from './core/eligibility.js';
+import { CATALOG_VERSION, SCHEMES } from './data/schemes.js';
+import { createProfileForm } from './ui/form.js';
+import { initialLang, saveLang, t, translateTree } from './ui/i18n.js';
+import { createResultsView } from './ui/results.js';
 
-// ── Loading steps sequence ───────────────────
-const LOADING_STEPS = [
-  "Reading your profile...",
-  "Checking PM Kisan eligibility...",
-  "Scanning 35+ agriculture schemes...",
-  "Checking Ayushman Bharat...",
-  "Scanning health schemes...",
-  "Checking housing schemes...",
-  "Scanning education scholarships...",
-  "Checking MUDRA loan eligibility...",
-  "Scanning employment schemes...",
-  "Checking insurance schemes...",
-  "Calculating total benefits...",
-  "Preparing your results...",
-];
+/** @typedef {import('./core/profile.js').Lang} Lang */
+/** @typedef {import('./core/profile.js').Profile} Profile */
 
-const LOADING_STEPS_HI = [
-  "आपकी प्रोफ़ाइल पढ़ी जा रही है...",
-  "पीएम किसान पात्रता जांच...",
-  "35+ कृषि योजनाएं स्कैन हो रही हैं...",
-  "आयुष्मान भारत जांच...",
-  "स्वास्थ्य योजनाएं स्कैन हो रही हैं...",
-  "आवास योजनाएं जांच...",
-  "शिक्षा छात्रवृत्तियां स्कैन...",
-  "मुद्रा ऋण पात्रता जांच...",
-  "रोजगार योजनाएं स्कैन...",
-  "बीमा योजनाएं जांच...",
-  "कुल लाभ की गणना...",
-  "आपके परिणाम तैयार हो रहे हैं...",
-];
+const formEl = /** @type {HTMLFormElement} */ (document.getElementById('profile-form'));
+const resultsEl = /** @type {HTMLElement} */ (document.getElementById('results'));
+const form = createProfileForm(formEl);
+const results = createResultsView(resultsEl);
 
-const SCHEME_PREVIEW_NAMES = [
-  "PM Kisan", "Ayushman Bharat", "PM Awas", "MUDRA Loan",
-  "PM Ujjwala", "PMKVY", "eShram", "APY", "PMJJBY",
-  "PMSBY", "NSP Scholarship", "MNREGA",
-];
+/** @type {Lang} */
+let lang = initialLang();
+/** @type {Profile | null} */
+let lastProfile = null;
 
-// ── DOM Ready ────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  initChips();
-  initForm();
-  initTabs();
-  initRestart();
-  updateProgress(1);
+// ── Language ──────────────────────────────────────────────────────
+
+/** @param {Lang} next */
+function setLang(next) {
+  lang = next;
+  document.documentElement.lang = lang;
+  document.title = t(lang, 'page_title');
+  translateTree(document, lang, { count: SCHEMES.length, version: CATALOG_VERSION });
+  document.getElementById('catalog-version')?.replaceChildren(t(lang, 'footer_catalog', { version: CATALOG_VERSION }));
+  document.querySelectorAll('.lang-switch__btn').forEach((btn) => {
+    btn.setAttribute('aria-pressed', String(/** @type {HTMLElement} */ (btn).dataset.lang === lang));
+  });
+  form.setLang(lang);
+  if (lastProfile) results.render(lastProfile, matchSchemes(lastProfile, SCHEMES), lang);
+  updateShareLinks();
+}
+
+document.querySelectorAll('.lang-switch__btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const next = /** @type {HTMLElement} */ (btn).dataset.lang === 'hi' ? 'hi' : 'en';
+    if (next === lang) return;
+    saveLang(next);
+    setLang(next);
+  });
 });
 
-// ── Chip selectors ───────────────────────────
-function initChips() {
-  ['occupation-chips', 'caste-chips'].forEach(groupId => {
-    const group = document.getElementById(groupId);
-    if (!group) return;
+// ── Views ─────────────────────────────────────────────────────────
 
-    const hiddenId = groupId === 'occupation-chips' ? 'occupation' : 'casteCategory';
-    const hidden = document.getElementById(hiddenId);
+/** @param {'form' | 'results'} view */
+function showView(view) {
+  document.querySelectorAll('[data-view]').forEach((el) => {
+    /** @type {HTMLElement} */ (el).hidden = /** @type {HTMLElement} */ (el).dataset.view !== view;
+  });
+  window.scrollTo({ top: 0 });
+}
 
-    group.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        // Deselect all in group
-        group.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-        // Select clicked
-        chip.classList.add('selected');
-        hidden.value = chip.dataset.value;
+formEl.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const profile = form.read();
+  if (!profile) return;
 
-        // Clear error
-        const errEl = document.getElementById(`err-${hiddenId === 'occupation' ? 'occupation' : 'caste'}`);
-        if (errEl) errEl.textContent = '';
-      });
+  lastProfile = profile;
+  results.render(profile, matchSchemes(profile, SCHEMES), lang);
+  results.showFirstTab();
+  showView('results');
+  document.getElementById('results-title')?.focus();
+});
+
+document.getElementById('edit-btn')?.addEventListener('click', () => {
+  showView('form');
+  formEl.querySelector('input')?.focus();
+});
+
+document.getElementById('reset-btn')?.addEventListener('click', () => {
+  lastProfile = null;
+  form.reset();
+  showView('form');
+  formEl.querySelector('input')?.focus();
+});
+
+// ── Sharing ───────────────────────────────────────────────────────
+
+/** The public page address, without any query string or fragment. */
+function pageUrl() {
+  return `${location.origin}${location.pathname}`;
+}
+
+function updateShareLinks() {
+  const whatsapp = /** @type {HTMLAnchorElement} */ (document.getElementById('share-whatsapp'));
+  whatsapp.href = `https://wa.me/?text=${encodeURIComponent(`${t(lang, 'share_message')} ${pageUrl()}`)}`;
+}
+
+const nativeShare = /** @type {HTMLButtonElement} */ (document.getElementById('share-native'));
+if (typeof navigator.share === 'function') {
+  nativeShare.hidden = false;
+  nativeShare.addEventListener('click', () => {
+    navigator.share({ title: 'LabhSetu', text: t(lang, 'share_message'), url: pageUrl() }).catch(() => {
+      // The user dismissed the share sheet; nothing to do.
     });
   });
 }
 
-// ── Income hint ──────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const incomeInput = document.getElementById('annualIncome');
-  const incomeHint = document.getElementById('income-hint');
-
-  if (incomeInput && incomeHint) {
-    incomeInput.addEventListener('input', () => {
-      const val = parseInt(incomeInput.value) || 0;
-      if (val === 0) { incomeHint.textContent = ''; return; }
-
-      let hint = '';
-      if (val <= 100000) hint = '🟢 Eligible for most BPL schemes';
-      else if (val <= 250000) hint = '🟢 Eligible for many government schemes';
-      else if (val <= 500000) hint = '🟡 Eligible for select schemes';
-      else if (val <= 800000) hint = '🟡 Eligible for middle-income schemes';
-      else hint = '⚪ Fewer schemes, but still checking...';
-
-      incomeHint.textContent = hint;
-    });
+document.getElementById('share-copy')?.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(pageUrl());
+    showToast(t(lang, 'copied'));
+  } catch {
+    showToast(t(lang, 'copy_failed'));
   }
 });
 
-// ── Form submission ──────────────────────────
-function initForm() {
-  const form = document.getElementById('profile-form');
-  if (!form) return;
+/** @type {number | undefined} */
+let toastTimer;
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) return;
-
-    // Collect profile
-    currentProfile = {
-      age: parseInt(document.getElementById('age').value),
-      gender: document.getElementById('gender').value,
-      annualIncome: parseInt(document.getElementById('annualIncome').value) || 0,
-      occupation: document.getElementById('occupation').value,
-      casteCategory: document.getElementById('casteCategory').value,
-      state: document.getElementById('state').value,
-      hasBPLCard: document.getElementById('hasBPLCard').checked,
-      hasLandHolding: document.getElementById('hasLandHolding').checked,
-      isDifferentlyAbled: document.getElementById('isDifferentlyAbled').checked,
-      hasBankAccount: document.getElementById('hasBankAccount').checked,
-    };
-
-    // Show loading
-    showView('loading');
-    updateProgress(2);
-    await runLoadingAnimation();
-
-    // Match schemes
-    matchResults = matchSchemes(currentProfile);
-
-    // Show results
-    renderResults(matchResults);
-    showView('results');
-    updateProgress(3);
-  });
+/** @param {string} message */
+function showToast(message) {
+  const toast = /** @type {HTMLElement} */ (document.getElementById('toast'));
+  toast.textContent = message;
+  toast.classList.add('toast--visible');
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove('toast--visible'), 2500);
 }
 
-// ── Validation ───────────────────────────────
-function validateForm() {
-  let valid = true;
+// ── Start ─────────────────────────────────────────────────────────
 
-  // Age
-  const age = parseInt(document.getElementById('age').value);
-  const errAge = document.getElementById('err-age');
-  if (!age || age < 1 || age > 120) {
-    errAge.textContent = t('err_age');
-    valid = false;
-  } else {
-    errAge.textContent = '';
-  }
-
-  // Income
-  const income = document.getElementById('annualIncome').value;
-  const errIncome = document.getElementById('err-income');
-  if (income === '' || parseInt(income) < 0) {
-    errIncome.textContent = t('err_income');
-    valid = false;
-  } else {
-    errIncome.textContent = '';
-  }
-
-  // Occupation
-  const occ = document.getElementById('occupation').value;
-  const errOcc = document.getElementById('err-occupation');
-  if (!occ) {
-    errOcc.textContent = t('err_occupation');
-    document.getElementById('occupation-chips').style.animation = 'shake 0.3s ease';
-    setTimeout(() => document.getElementById('occupation-chips').style.animation = '', 300);
-    valid = false;
-  } else {
-    errOcc.textContent = '';
-  }
-
-  // Caste
-  const caste = document.getElementById('casteCategory').value;
-  const errCaste = document.getElementById('err-caste');
-  if (!caste) {
-    errCaste.textContent = t('err_caste');
-    valid = false;
-  } else {
-    errCaste.textContent = '';
-  }
-
-  return valid;
-}
-
-// ── Loading animation ────────────────────────
-async function runLoadingAnimation() {
-  const stepEl = document.getElementById('loading-step');
-  const barEl = document.getElementById('loading-bar');
-  const tagsEl = document.getElementById('loading-schemes');
-  const lang = window.currentLang || 'en';
-  const steps = lang === 'hi' ? LOADING_STEPS_HI : LOADING_STEPS;
-
-  let tagIndex = 0;
-
-  for (let i = 0; i < steps.length; i++) {
-    if (stepEl) stepEl.textContent = steps[i];
-
-    // Progress bar
-    const pct = Math.round(((i + 1) / steps.length) * 100);
-    if (barEl) barEl.style.width = pct + '%';
-
-    // Trickle scheme tags
-    if (tagsEl && tagIndex < SCHEME_PREVIEW_NAMES.length) {
-      const tag = document.createElement('span');
-      tag.className = 'loading-scheme-tag';
-      tag.textContent = SCHEME_PREVIEW_NAMES[tagIndex++];
-      tag.style.animationDelay = '0s';
-      tagsEl.appendChild(tag);
-    }
-
-    await sleep(280);
-  }
-
-  await sleep(300);
-}
-
-function sleep(ms) {
-  return new Promise(res => setTimeout(res, ms));
-}
-
-// ── Render results ───────────────────────────
-function renderResults({ eligible, almost, totalBenefit }) {
-  const lang = window.currentLang || 'en';
-
-  // Summary numbers
-  document.getElementById('total-amount').textContent = formatBenefit(totalBenefit);
-  document.getElementById('eligible-count').textContent = eligible.length;
-  document.getElementById('almost-count').textContent = almost.length;
-  document.getElementById('tab-eligible-count').textContent = eligible.length;
-  document.getElementById('tab-almost-count').textContent = almost.length;
-
-  // Eligible cards
-  const eligibleList = document.getElementById('eligible-list');
-  eligibleList.innerHTML = '';
-
-  if (eligible.length === 0) {
-    eligibleList.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🔍</div>
-        <div class="empty-title">No exact matches found</div>
-        <div class="empty-sub">Check the "Almost Eligible" tab — you may qualify with small changes.</div>
-      </div>`;
-  } else {
-    eligible.forEach((scheme, i) => {
-      eligibleList.appendChild(buildCard(scheme, 'eligible', i, lang));
-    });
-  }
-
-  // Almost cards
-  const almostList = document.getElementById('almost-list');
-  almostList.innerHTML = '';
-
-  if (almost.length === 0) {
-    almostList.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">✅</div>
-        <div class="empty-title">Great news!</div>
-        <div class="empty-sub">You're eligible for all matching schemes.</div>
-      </div>`;
-  } else {
-    almost.forEach((scheme, i) => {
-      almostList.appendChild(buildCard(scheme, 'almost', i, lang));
-    });
-  }
-}
-
-// ── Build a scheme card DOM element ──────────
-function buildCard(scheme, type, index, lang) {
-  const name = lang === 'hi' ? scheme.name_hi : scheme.name_en;
-  const ministry = lang === 'hi' ? scheme.ministry_hi : scheme.ministry_en;
-  const desc = lang === 'hi' ? scheme.description_hi : scheme.description_en;
-
-  const card = document.createElement('div');
-  card.className = `scheme-card ${type}`;
-  card.style.animationDelay = `${index * 0.06}s`;
-
-  const whyOrMissed = type === 'eligible'
-    ? `<div class="why-eligible">
-         <span class="why-icon">✓</span>
-         <span class="why-text">${scheme.matchReason || ''}</span>
-       </div>`
-    : `<div class="missed-bar">
-         <span class="miss-icon">⚠</span>
-         <span class="miss-text">${lang === 'hi' ? 'चूक गए: ' : 'Missed: '}${scheme.missedReason || ''}</span>
-       </div>`;
-
-  const docTags = (scheme.documents || [])
-    .map(d => `<span class="doc-tag">${d}</span>`)
-    .join('');
-
-  card.innerHTML = `
-    <div class="card-inner">
-      <div class="card-top">
-        <span class="ministry-tag">${ministry}</span>
-        <div class="benefit-chip">
-          <span class="benefit-amount">${scheme.benefit_display}</span>
-          <span class="benefit-type">${scheme.benefit_type}</span>
-        </div>
-      </div>
-      <div class="scheme-name">${name}</div>
-      ${whyOrMissed}
-      <button class="card-expand-btn" onclick="toggleDetails(this)" aria-expanded="false">
-        <span>▸ Documents needed</span>
-      </button>
-      <div class="card-extra collapsed" style="max-height:0">
-        <div class="docs-section">
-          <div class="doc-tags">${docTags}</div>
-        </div>
-        <p style="font-size:0.8rem;color:var(--grey-2);margin-top:8px;">${desc}</p>
-      </div>
-    </div>
-    <div class="card-footer">
-      <a href="${scheme.apply_link}" target="_blank" rel="noopener" class="btn-apply">
-        ${lang === 'hi' ? 'अभी आवेदन करें' : 'Apply Now'}
-        <span class="apply-arrow">→</span>
-      </a>
-    </div>
-  `;
-
-  return card;
-}
-
-// ── Toggle expand/collapse ───────────────────
-function toggleDetails(btn) {
-  const extra = btn.nextElementSibling;
-  const isOpen = btn.getAttribute('aria-expanded') === 'true';
-
-  if (isOpen) {
-    extra.style.maxHeight = '0';
-    extra.classList.add('collapsed');
-    btn.setAttribute('aria-expanded', 'false');
-    btn.querySelector('span').textContent = '▸ Documents needed';
-  } else {
-    extra.classList.remove('collapsed');
-    extra.style.maxHeight = extra.scrollHeight + 'px';
-    btn.setAttribute('aria-expanded', 'true');
-    btn.querySelector('span').textContent = '▾ Hide details';
-  }
-}
-
-// ── Tabs ─────────────────────────────────────
-function initTabs() {
-  document.querySelectorAll('.rtab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.target;
-
-      document.querySelectorAll('.rtab').forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-selected', 'false');
-      });
-      btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
-
-      document.querySelectorAll('.scheme-list').forEach(list => {
-        if (list.id === target) {
-          list.classList.remove('hidden-tab');
-        } else {
-          list.classList.add('hidden-tab');
-        }
-      });
-    });
-  });
-}
-
-// ── Restart ──────────────────────────────────
-function initRestart() {
-  const btn = document.getElementById('btn-restart');
-  if (btn) {
-    btn.addEventListener('click', () => {
-      // Clear form
-      document.getElementById('profile-form').reset();
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-      document.getElementById('occupation').value = '';
-      document.getElementById('casteCategory').value = '';
-      document.getElementById('income-hint').textContent = '';
-      document.getElementById('loading-schemes').innerHTML = '';
-
-      // Reset state
-      currentProfile = null;
-      matchResults = null;
-
-      showView('form');
-      updateProgress(1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-}
-
-// ── View switcher ────────────────────────────
-function showView(name) {
-  document.querySelectorAll('.view').forEach(v => {
-    v.classList.add('hidden');
-    v.classList.remove('active');
-  });
-
-  const target = document.getElementById(`view-${name}`);
-  if (target) {
-    target.classList.remove('hidden');
-    target.classList.add('active');
-  }
-}
-
-// ── Progress bar ─────────────────────────────
-function updateProgress(step) {
-  const bar = document.getElementById('progress-bar');
-  const label = document.getElementById('step-indicator');
-  const pct = Math.round((step / 3) * 100);
-
-  if (bar) bar.style.width = pct + '%';
-  if (label) label.textContent = t(`step${step}`);
-}
-
-// ── CSS shake animation ──────────────────────
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes shake {
-    0%,100%{ transform: translateX(0); }
-    25%    { transform: translateX(-6px); }
-    75%    { transform: translateX(6px); }
-  }
-`;
-document.head.appendChild(style);
+form.enable();
+setLang(lang);
+document.body.dataset.ready = 'true';
