@@ -1,59 +1,31 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
+// @ts-check
+/**
+ * Process entry point: load configuration, start the HTTP server and shut
+ * down gracefully on SIGINT / SIGTERM (e.g. during a container redeploy).
+ */
+import { createApp } from './app.js';
+import { loadConfig } from './config.js';
 
-// Route imports
-const schemeRoutes = require('./routes/schemes');
-const userRoutes = require('./routes/user');
-const uploadRoutes = require('./routes/upload');
+const config = loadConfig();
+const app = createApp(config);
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Serve static frontend
-const path = require('path');
-app.use(express.static(path.join(__dirname, '../frontend')));
-
-// Main Routes
-app.use('/api/schemes', schemeRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/upload', uploadRoutes);
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Backend is running' });
+const server = app.listen(config.port, config.host, () => {
+  const shownHost = config.host === '0.0.0.0' ? 'localhost' : config.host;
+  console.log(`LabhSetu running at http://${shownHost}:${config.port} (${config.env})`);
 });
 
-// Database connection & Data Seeding
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/schemes')
-  .then(async () => {
-    console.log('Connected to MongoDB');
-    
-    // Seed initial schemes if the collection is empty
-    const Scheme = require('./models/Scheme');
-    const count = await Scheme.countDocuments();
-    if (count === 0) {
-      try {
-        const fs = require('fs');
-        const path = require('path');
-        const rawData = fs.readFileSync(path.join(__dirname, '../database/schemes_data.json'));
-        const data = JSON.parse(rawData);
-        await Scheme.insertMany(data.schemes);
-        console.log('Seeded database with initial schemes data.');
-      } catch (err) {
-        console.error('Error seeding data:', err);
-      }
-    }
+server.on('error', (err) => {
+  console.error('Failed to start server:', err.message);
+  process.exit(1);
+});
 
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('Failed to connect to MongoDB', err);
-  });
+/** @param {NodeJS.Signals} signal */
+function shutdown(signal) {
+  console.log(`${signal} received, shutting down…`);
+  server.close(() => process.exit(0));
+  // Don't hang forever on keep-alive connections.
+  setTimeout(() => process.exit(0), 5000).unref();
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
