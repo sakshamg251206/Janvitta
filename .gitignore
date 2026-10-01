@@ -1,22 +1,24 @@
+# Dependencies
 node_modules/
-.env
-.env.local
-venv/
 
-# Mac specific
-.DS_Store
+# Environment — never commit real values; see .env.example
+.env
+.env.*
+!.env.example
+
+# Test output
+coverage/
+test-results/
+playwright-report/
+blob-report/
 
 # Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 *.log
+npm-debug.log*
 
-# Python
-__pycache__/
-*.pyc
-
-# Build & Coverage
-/dist/
-/build/
-/coverage/
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
